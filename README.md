@@ -43,3 +43,20 @@ Check the model and image pathes in CIEDE2000.py, and then run:
 ```
 CIEDE2000.py
 ```
+
+## Citation
+
+If you find PairLIE is useful in your research, please cite our paper:
+
+```
+@article{wangBilateralEnhancementNetwork2024b,
+  title = {Bilateral Enhancement Network with Signal-to-Noise Ratio Fusion for Lightweight Generalizable Low-Light Image Enhancement},
+  author = {Wang, Junfeng and Huang, Shenghui and Huo, Zhanqiang and Zhao, Shan and Qiao, Yingxu},
+  year = {2024},
+  month = nov,
+  journal = {Scientific Reports},
+  pages = {29832},
+  issn = {2045-2322},
+  doi = {10.1038/s41598-024-81706-2},
+}
+```
