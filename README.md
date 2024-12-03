@@ -4,6 +4,7 @@
 <div align=center><img src="https://github.com/2665207323/BiEnNet/blob/main/BiEnNet/img/BiEnNet.jpg"/></div>
 
 ### Requirements
+- python >=3.8
 - numpy
 - torch
 - torchvision
