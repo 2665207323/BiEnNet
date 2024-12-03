@@ -10,7 +10,7 @@
 - torchvision
 
 ### Datesets
-We provide download links for training and testing datasets as well as datasets used by NIQE indicators[(Google Drive)](https://rdcu.be/d2gRo)[(aliyun)](https://rdcu.be/d2gRo)
+We provide download links for training and testing datasets as well as datasets used by NIQE indicators[(Google Drive)](https://drive.google.com/file/d/1jP84rkPEwRmSDgzG9OWsVwRvsEA5cWld/view?usp=drive_link)[(baiduyun)](https://pan.baidu.com/s/1QqQSFwcAOiofp0XcVJ9QQw?pwd=eman)
 
 
 ### Testing for testing datasets
