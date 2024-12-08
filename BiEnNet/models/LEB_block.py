@@ -60,7 +60,7 @@ class LEB(nn.Module):  # 局部增强块
         # 随机深度的下降路径，看这是否比这里的下降更好，作用于 PWConv-DWConv-PWConv 部分
         self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()
 
-        self.norm2 = norm_layer(dim)  # 光归一化2
+        self.norm2 = norm_layer(dim)
         mlp_hidden_dim = int(dim * mlp_ratio)
         self.gamma_1 = nn.Parameter(init_values * torch.ones((1, dim, 1, 1)), requires_grad=True)  # k1
         self.gamma_2 = nn.Parameter(init_values * torch.ones((1, dim, 1, 1)), requires_grad=True)  # k2
