@@ -79,7 +79,7 @@ class mlp_net(nn.Module):  # (以 微光图像的 V通道 和 期望的平均亮
     def __init__(self, nbins, out_dim):
         super(mlp_net, self).__init__()
         self.leakyrelu = nn.LeakyReLU(inplace=True)
-        self.g_conv1 = Point_Conv(2*(nbins + 1), out_dim)  # 用于亮度直方图 in_dim=32+1, out_dim=16
+        self.g_conv1 = Point_Conv(2*(nbins + 1), out_dim)  # 用于亮度直方图
         self.g_conv2 = Point_Conv(out_dim, out_dim)
         self.g_conv3 = Point_Conv(out_dim + 2*(nbins + 1), out_dim)
         self.g_conv4 = Point_Conv(out_dim, out_dim)
@@ -87,10 +87,10 @@ class mlp_net(nn.Module):  # (以 微光图像的 V通道 和 期望的平均亮
 
     def forward(self, hist, x_channel):
         out1 = self.leakyrelu(self.g_conv1(hist))
-        out2 = self.leakyrelu(self.g_conv2(out1))  # out_dim=16,   逐点卷积
-        out3 = self.leakyrelu(self.g_conv3(torch.cat([out2, hist], dim=1)))  # out_dim=16,   将g2 和 输入hist在通道维度上拼接，并逐点卷积
-        out4 = self.leakyrelu(self.g_conv4(out3))  # out_dim=16
-        out5 = self.leakyrelu(self.g_conv5(out4))  # out_dim=8
+        out2 = self.leakyrelu(self.g_conv2(out1))  
+        out3 = self.leakyrelu(self.g_conv3(torch.cat([out2, hist], dim=1)))  
+        out4 = self.leakyrelu(self.g_conv4(out3))  
+        out5 = self.leakyrelu(self.g_conv5(out4))  
 
         retouch_out = retouch(x_channel, out5)  # 图像修复，得到全局建议  [b,8,h,w]
         return retouch_out
@@ -114,7 +114,7 @@ class LEN(nn.Module):
     def __init__(self, out_dim):
         super(LEN, self).__init__()
         self.leakyrelu = nn.LeakyReLU(inplace=True)
-        self.e_conv1 = Deep_Conv(4+3, out_dim)  # in_dim = 7, out_dim = 16
+        self.e_conv1 = Deep_Conv(4+3, out_dim)  
 
         self.e_conv2 = Deep_Conv(out_dim, out_dim)
         self.e_conv3 = Deep_Conv(out_dim + 3 + 3 + 1, out_dim)
@@ -137,7 +137,7 @@ class LEN(nn.Module):
 class local_block(nn.Module):
     def __init__(self, in_dim=3*2, out_dim=16):
         super(local_block, self).__init__()
-        # self.conv = nn.Conv2d(in_dim, out_dim, 3, padding=1, groups=1)
+       
         self.conv = SCConv(in_dim, out_dim, 3, 1, 1, 1, 1, 4, 0, nn.BatchNorm2d)
         self.leaky_relu = nn.LeakyReLU(negative_slope=0.2, inplace=True)
 
@@ -145,11 +145,11 @@ class local_block(nn.Module):
         self.LFE = nn.Sequential(*LFE_Block)
 
     def forward(self, x_cat, x_denoise_cat):
-        fea = self.leaky_relu(self.conv(x_cat))  # [b, c, h, w]
-        res_fea = self.LFE(fea) + fea  # [b, out_dim, h, w]  局部残差
+        fea = self.leaky_relu(self.conv(x_cat))  
+        res_fea = self.LFE(fea) + fea  
 
-        snr_map = SNR_mask(x_cat, x_denoise_cat)  # [b, 1, h, w]
-        snr_map = snr_map.repeat(1, fea.shape[1], 1, 1)  # [b, out_dim, h, w]在通道维度上进行赋值，以匹配特征图的通道数。这样，每个通道都有相同的掩码
+        snr_map = SNR_mask(x_cat, x_denoise_cat)  
+        snr_map = snr_map.repeat(1, fea.shape[1], 1, 1)
         return res_fea, snr_map
 
 
@@ -173,7 +173,7 @@ class BiEnNet(nn.Module):
         self.dep_net = DEP(out_dim).to(device)
         self.local_net = local_block(3 * 2, out_dim).to(device)
 
-    def forward(self, x, exp_mean):  # hist-[[batch, bins+1, 1, 1]]
+    def forward(self, x, exp_mean):  
 
         x_lnm = self.lnm_net(x)  # 通道归一化模块  [b, 3, h, w]
         x_cat = torch.cat([x, x_lnm], 1)  # [b, 6, h, w]
@@ -183,11 +183,11 @@ class BiEnNet(nn.Module):
         x_denoise_lnm = calc_low_denoise(x_lnm).to(device)
         x_denoise_cat = torch.cat([x_denoise, x_denoise_lnm], 1)
 
-        hist_low = calc_hist(x, self.nbins, exp_mean).to(device)  # 计算暗光图像的亮度直方图 [b, bins+1, 1, 1]
+        hist_low = calc_hist(x, self.nbins, exp_mean).to(device)  
         hist_low_lnm = calc_hist(x_lnm, self.nbins, exp_mean).to(device)
         hist_low_cat = torch.cat([hist_low, hist_low_lnm], 1)  # [b, 2*(bins+1), 1, 1]
 
-        x_V = x.max(1, keepdim=True)[0]  #  [b, 1, h, w] 取x的每个通道上的最大值，并保持与 x 相同的维度，并取元组(value, id)的第一个元素
+        x_V = x.max(1, keepdim=True)[0]
 
         if self.scale_factor == 1:
             x_V_up = torch.mean(x_V, [2, 3], keepdim=True) + x_V * 0  # [b, 1, h, w]
@@ -197,7 +197,7 @@ class BiEnNet(nn.Module):
             x_V_up = F.interpolate(x_V_down, scale_factor=self.scale_factor, mode='bilinear')
 
         # GBA (MLP-5层)(逐点卷积)  对亮度直方图进行mlp  并进行图像修复，得到全局色相,饱和度和亮度调整建议
-        retouch_image = self.mlp_net(hist_low_cat, x_V)  # hist : [b,bins+1,1,1]->[b,8,1,1]  x_V : [b,1,h,w]   retouch_V : [b,1,h,w]
+        retouch_image = self.mlp_net(hist_low_cat, x_V)
         fea_V = self.len_net(x_cat, x_V_up, retouch_image)
 
         # 局部残差 + 信噪比融合
