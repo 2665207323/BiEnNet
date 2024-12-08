@@ -25,7 +25,6 @@ class Aff_channel(nn.Module):
 
 
 class CMlp(nn.Module):
-    # taken from https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/vision_transformer.py
     def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0.):
         super().__init__()
         out_features = out_features or in_features
@@ -50,7 +49,7 @@ class LEB(nn.Module):  # 局部增强块
         super().__init__()
         self.leakrelu = nn.LeakyReLU(inplace=True)
         self.pos_embed = SCConv(dim, dim, 3, 1, 1, 1, 1, 4, 0, nn.BatchNorm2d)
-        self.norm1 = norm_layer(dim)  # 光归一化1
+        self.norm1 = norm_layer(dim) 
 
         # PWConv-DWConv-PWConv ( 1x1 -> 5x5 -> 1x1)增强局部细节
         self.conv1 = nn.Conv2d(dim, dim, 1)  # in_dim=out_dim=16
@@ -72,12 +71,12 @@ class LEB(nn.Module):  # 局部增强块
         x = x + self.pos_embed(x)  # 3x3的深度卷积 用于 位置编码
         B, C, H, W = x.shape   # C=16
         norm_x = x.flatten(2).transpose(1, 2)  # 拉伸，铺平  C=600*400=240000
-        norm_x = self.norm1(norm_x)  # 光归一化1  C=600*400=240000
+        norm_x = self.norm1(norm_x)
         norm_x = norm_x.view(B, H, W, C).permute(0, 3, 1, 2)  # C=16
 
         # 第一个残差和
         x = x + self.drop_path(self.gamma_1 * self.leakrelu(self.conv2(self.attn(self.leakrelu(self.conv1(norm_x))))))  # C=16
-        # 光归一化2
+    
         norm_x = x.flatten(2).transpose(1, 2)
         norm_x = self.norm2(norm_x)
         norm_x = norm_x.view(B, H, W, C).permute(0, 3, 1, 2)  # C=16
