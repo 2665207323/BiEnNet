@@ -29,9 +29,9 @@ test_dataset = dataset_test.test_dataset(
 
 test_loader = DataLoader(
     test_dataset,
-    batch_size=1,
+    batch_size=1,  # 根据你的需求修改 batch_size
     shuffle=False,
-    num_workers=0,
+    num_workers=0,  # 根据你的系统性能修改 num_workers
     pin_memory=True
 )
 
