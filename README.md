@@ -13,6 +13,13 @@
 We provide download links for training and testing datasets as well as datasets used by NIQE indicators[(Google Drive)](https://drive.google.com/file/d/1jP84rkPEwRmSDgzG9OWsVwRvsEA5cWld/view?usp=drive_link)[(baiduyun)](https://pan.baidu.com/s/1QqQSFwcAOiofp0XcVJ9QQw?pwd=eman)
 
 
+### Training useing the training datasets
+
+Check the parameter settings, model and image pathes in train.py, and then run:
+```
+train.py
+```
+
 ### Testing for testing datasets
 
 Check the model and image pathes in test.py, and then run:
