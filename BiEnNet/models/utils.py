@@ -1,6 +1,3 @@
-# 2020 CVPR
-# https://github.com/MCG-NKU/SCNet
-# https://mftp.mmcheng.net/Papers/20cvprSCNet.pdf
 import torch
 from torch import nn
 import torch.nn.functional as F
